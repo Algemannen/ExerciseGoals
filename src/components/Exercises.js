@@ -66,7 +66,6 @@ class Exercises extends Component {
     
 
     //DONE: Find a way to append items into the array in localStorage
-    //Du e helt rå Jørgen!!!!!!
     //This function takes in a new exercise, checks if there are other exercises in the localstorage,
     //if so appens these exercises and the new one into a new list which is stored in local storage
     addExercisesToLocalStorage = (newExercise) => {
@@ -81,16 +80,51 @@ class Exercises extends Component {
         localStorage.setItem('exercises', JSON.stringify(exercises));
     }
 
-    addCompletesToLocalStorage = (newComplete) => {
+    //This function takes in a title and removes the object with that title from localStorage
+    removeExercisesFromLocalStorage = (title) => {
+        let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+        let filteredExercises = exercises.filter(exercise => exercise.title !== title);
+        localStorage.setItem('exercises', JSON.stringify(filteredExercises));
+        //Updates the elements on the page
+        this.forceUpdate();
+    }
+
+    addCompletesToLocalStorage = (title) => {
+        //console.log('title: ', title);
         //Make a new list
         let completes = [];
         //Append the existing values into this list and add the latest one into the list
         let oldComplete = JSON.parse(localStorage.getItem('completes')) || [];
+        console.log('oldComplete: ', oldComplete);
+        let exerciseList = JSON.parse(localStorage.getItem('exercises')) || [];
+        console.log('exerciseList: ', exerciseList);
         if(oldComplete.length > 0){
-            oldComplete.map( i => completes.push(i));
+            oldComplete.map(complete => completes.push(complete));
         }
-        completes.push(newComplete);
+        //If exercises contains elements we extract the element with the title we want to add to completes
+        if(exerciseList.length > 0){
+            let newComplete = exerciseList.filter(exercise => exercise.title === title);
+            console.log('newComplete: ', newComplete);
+            //console.log(newComplete.title === title);
+            //Workaround!!
+            //Should find a different way of making this work
+            completes.push(newComplete[0]);
+        }
+
+        this.removeExercisesFromLocalStorage(title);
+        
         localStorage.setItem('completes', JSON.stringify(completes));
+    }
+
+    //TODO: Remove completes from local storage
+    //Should work after addCompletesToLocalStorage is done
+    //This function takes in a title and removes the object with that title from localStorage
+    removeCompletesFromLocalStorage = (title) => {
+        let completes = JSON.parse(localStorage.getItem('completes')) || [];
+        let filteredCompletes = completes.filter(complete => complete.title !== title);
+        localStorage.setItem('completes', JSON.stringify(filteredCompletes));
+        //Updates the elements on the page
+        this.forceUpdate();
     }
 
     //TODO: Showcase this in the application
@@ -108,7 +142,7 @@ class Exercises extends Component {
     //TODO: add a field for index
     addGoal = () => {
         let {title, weight, date} = this.state;
-        console.log(date.length);
+        //console.log(date.length);
         if(title.length > 0 && weight > 0 && date.length === 10){
             this.setState({
                 errorMessage: '',
@@ -134,10 +168,8 @@ class Exercises extends Component {
     //TODO: add index instead of title and localStorage
     //Function that takes in a title, removes the element with that title and updates the existing list
     removeGoals = (title) => {
-        //console.log('title: ', title);
         let {exercises} = this.state;
         let filteredItems = exercises.filter(i => { return i.title !== title});
-        //console.log('filteredItems: ', filteredItems);
         this.setState({
             exercises: filteredItems
         });
@@ -147,7 +179,6 @@ class Exercises extends Component {
     removeCompleted = (title) => {
         let {completed} = this.state;
         let filteredItems = completed.filter(i => { return i.title !== title});
-        console.log('filteredItems: ', filteredItems);
         this.setState({
             completed: filteredItems
         });
@@ -158,7 +189,6 @@ class Exercises extends Component {
         let {exercises} = this.state;
         //Getting the completed item
         let completedItem = exercises.filter(i => { return i.title === title});
-        console.log('completedItem', completedItem);
         //Getting the filtered list without the completed item
         let filteredItems = exercises.filter(i => { return i.title !== title});
         //Using the spread operator for completedItem since it is a list
@@ -200,7 +230,7 @@ class Exercises extends Component {
         //console.log(goal);
         //console.log("exercises: ", this.state.exercises);
         //console.log('completed: ', this.state.completed);
-        let {completed} = this.state;
+        let completed = this.getCompletesFromLocalStorage();
         let exercises = this.getExercisesFromLocalStorage();
 
         const deleteIcon = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -277,10 +307,10 @@ class Exercises extends Component {
                         {<CardContent>
                             <Typography variant="h6">{exercise.title}</Typography>
                             <Typography>{exercise.weight} kg | {exercise.date}</Typography>
-                            <IconButton onClick={() => this.addToCompletedGoals(exercise.title)}>
+                            <IconButton onClick={() => this.addCompletesToLocalStorage(exercise.title)}>
                                 {checkBoxIcon}
                             </IconButton>
-                            <IconButton onClick={() => this.removeGoals(exercise.title)}>
+                            <IconButton onClick={() => this.removeExercisesFromLocalStorage(exercise.title)}>
                                 {deleteIcon}
                             </IconButton>
                         </CardContent>}
@@ -299,7 +329,7 @@ class Exercises extends Component {
                             <IconButton disabled>
                                 {checkedBoxIcon}
                             </IconButton>
-                            <IconButton onClick={() => this.removeCompleted(complete.title)}>
+                            <IconButton onClick={() => this.removeCompletesFromLocalStorage(complete.title)}>
                                 {deleteIcon}
                             </IconButton>
                         </CardContent>}
