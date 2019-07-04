@@ -249,7 +249,7 @@ class Exercises extends Component {
 
         
         return(
-            <div className={styles.root}>
+            <div className="application">
                 <AppBar position='static'>
                     <Typography variant="h3" color="inherit">
                         Exercise Goals
@@ -301,40 +301,43 @@ class Exercises extends Component {
                 {exercises === [] && <Typography>{this.state.motivationalMessage}</Typography>}
                 
                 {/*You cannot map over new Date() object */}
-                {exercises && exercises.map((exercise, index) =>
-                    <Card key={index} style={{margin: ' 20px'}}>
-                    
-                        {<CardContent>
-                            <Typography variant="h6">{exercise.title}</Typography>
-                            <Typography>{exercise.weight} kg | {exercise.date}</Typography>
-                            <IconButton onClick={() => this.addCompletesToLocalStorage(exercise.title)}>
-                                {checkBoxIcon}
-                            </IconButton>
-                            <IconButton onClick={() => this.removeExercisesFromLocalStorage(exercise.title)}>
-                                {deleteIcon}
-                            </IconButton>
-                        </CardContent>}
-                    </Card>
-                )}
-
+                <div className='cards'>
+                    {exercises && exercises.map((exercise, index) =>
+                        <Card key={index} style={{margin: ' 20px'}}>
+                        
+                            {<CardContent>
+                                <Typography variant="h6">{exercise.title}</Typography>
+                                <Typography>{exercise.weight} kg | {exercise.date}</Typography>
+                                <IconButton onClick={() => this.addCompletesToLocalStorage(exercise.title)}>
+                                    {checkBoxIcon}
+                                </IconButton>
+                                <IconButton onClick={() => this.removeExercisesFromLocalStorage(exercise.title)}>
+                                    {deleteIcon}
+                                </IconButton>
+                            </CardContent>}
+                        </Card>
+                    )}
+                </div>
                 <Divider />
                 <Typography variant="h5" color="inherit" style={{padding: '20px', textDecoration: 'underline'}}>
                         Completed Goals
                 </Typography>
-                {completed && completed.map((complete, index) =>
-                    <Card key={index + 1} style={{margin: '20px'}}>
-                        {<CardContent>
-                            <Typography variant="h6">{complete.title}</Typography>
-                            <Typography>{complete.weight} kg | {complete.date}</Typography>
-                            <IconButton disabled>
-                                {checkedBoxIcon}
-                            </IconButton>
-                            <IconButton onClick={() => this.removeCompletesFromLocalStorage(complete.title)}>
-                                {deleteIcon}
-                            </IconButton>
-                        </CardContent>}
-                    </Card>
-                )}
+                <div className='cards'>
+                    {completed && completed.map((complete, index) =>
+                        <Card key={index + 1} style={{margin: '20px'}}>
+                            {<CardContent>
+                                <Typography variant="h6">{complete.title}</Typography>
+                                <Typography>{complete.weight} kg | {complete.date}</Typography>
+                                <IconButton disabled>
+                                    {checkedBoxIcon}
+                                </IconButton>
+                                <IconButton onClick={() => this.removeCompletesFromLocalStorage(complete.title)}>
+                                    {deleteIcon}
+                                </IconButton>
+                            </CardContent>}
+                        </Card>
+                    )}
+                </div>
                 <Typography style={{margin: '20px'}}>
                     Made by Jørgen Johansen, free to use on GitHub.
                 </Typography>
